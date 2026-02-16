@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bella Kang</title>
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#FAF9F6;--fg:#111;--mid:#555;--soft:#999;--line:#E0DED8;--warm:#C4503A;
+      --serif:'Instrument Serif',Georgia,serif;
+      --sans:'Geist',-apple-system,system-ui,sans-serif;
+      --mono:'Geist Mono','SF Mono',monospace;
+    }
+    *{margin:0;padding:0;box-sizing:border-box}
+    html{height:100%}
+    body{font-family:var(--sans);background:var(--bg);color:var(--fg);-webkit-font-smoothing:antialiased;height:100%;overflow:hidden}
+    ::selection{background:var(--fg);color:var(--bg)}
+
+    /* ─── LAYOUT: sidebar + main ─── */
+    .layout{display:grid;grid-template-columns:220px 1fr;height:100vh}
+
+    /* ─── SIDEBAR ─── */
+    .side{
+      border-right:1px solid var(--line);
+      padding:2.5rem 1.8rem;
+      display:flex;flex-direction:column;
+      justify-content:space-between;
+      position:relative;
+    }
+    .side-top{}
+    .side-photo{
+      width:64px;height:64px;border-radius:50%;
+      object-fit:cover;object-position:center top;
+      display:block;margin-bottom:1.2rem;
+      filter:grayscale(0.2);transition:filter 0.3s;
+    }
+    .side-photo:hover{filter:grayscale(0)}
+    .side-name{
+      font-family:var(--serif);
+      font-size:1.6rem;font-weight:400;
+      line-height:1.15;margin-bottom:0.3rem;
+    }
+    .side-role{
+      font-family:var(--mono);
+      font-size:0.65rem;font-weight:400;
+      color:var(--soft);letter-spacing:0.02em;
+      line-height:1.5;margin-bottom:2rem;
+    }
+
+    .side-nav{list-style:none;display:flex;flex-direction:column;gap:0.15rem}
+    .side-nav a{
+      display:block;text-decoration:none;
+      font-size:0.82rem;font-weight:400;
+      color:var(--mid);padding:0.45rem 0;
+      transition:all 0.2s;
+      border-bottom:1px solid transparent;
+    }
+    .side-nav a:hover{color:var(--fg)}
+    .side-nav a.active{color:var(--fg);font-weight:500}
+
+    .side-rule{width:32px;height:1px;background:var(--line);margin:1.5rem 0}
+
+    .side-bottom{}
+    .side-links{display:flex;flex-direction:column;gap:0.3rem}
+    .side-links a{
+      font-size:0.75rem;color:var(--soft);text-decoration:none;
+      transition:color 0.2s;font-family:var(--mono);
+    }
+    .side-links a:hover{color:var(--fg)}
+    .side-copy{font-size:0.65rem;color:var(--line);margin-top:1rem;font-family:var(--mono)}
+
+    /* ─── MAIN CONTENT ─── */
+    .main{overflow-y:auto;padding:2.5rem 3rem}
+
+    /* ─── HOME VIEW: grid of clickable blocks ─── */
+    .home-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      grid-template-rows:auto auto auto;
+      gap:1px;
+      background:var(--line);
+      height:calc(100vh - 5rem);
+    }
+    .block{
+      background:var(--bg);
+      padding:2rem 2.2rem;
+      display:flex;flex-direction:column;
+      justify-content:space-between;
+      text-decoration:none;color:inherit;
+      cursor:pointer;
+      transition:all 0.3s;
+      position:relative;
+      overflow:hidden;
+    }
+    .block:hover{background:#F2F1EC}
+    .block-num{
+      font-family:var(--mono);
+      font-size:0.6rem;font-weight:400;
+      color:var(--soft);letter-spacing:0.08em;
+      text-transform:uppercase;
+      margin-bottom:auto;
+    }
+    .block-content{margin-top:auto}
+    .block h3{
+      font-family:var(--serif);
+      font-size:1.6rem;font-weight:400;
+      line-height:1.2;margin-bottom:0.4rem;
+    }
+    .block-sub{
+      font-size:0.78rem;color:var(--mid);
+      line-height:1.6;
+    }
+    .block-arrow{
+      position:absolute;top:2rem;right:2.2rem;
+      font-size:1rem;color:var(--line);
+      transition:all 0.3s;
+    }
+    .block:hover .block-arrow{color:var(--fg);transform:translate(3px,-3px)}
+
+    /* Featured block — spans 2 cols */
+    .block-wide{grid-column:span 2}
+    .block-wide h3{font-size:2rem}
+
+    /* Research question block */
+    .block-question{
+      background:#111;color:var(--bg);
+    }
+    .block-question:hover{background:#222}
+    .block-question .block-num{color:rgba(250,249,246,0.3)}
+    .block-question .block-sub{color:rgba(250,249,246,0.5)}
+    .block-question .block-arrow{color:rgba(250,249,246,0.2)}
+    .block-question:hover .block-arrow{color:var(--bg)}
+    .block-question h3{
+      font-family:var(--serif);
+      font-style:italic;
+      font-size:1.4rem;
+      line-height:1.4;
+    }
+
+    /* Photo block */
+    .block-photo{padding:0;position:relative}
+    .block-photo img{width:100%;height:100%;object-fit:cover;display:block;filter:brightness(0.92);transition:filter 0.4s}
+    .block-photo:hover img{filter:brightness(1)}
+    .block-photo .block-photo-label{
+      position:absolute;bottom:1.2rem;left:1.5rem;
+      font-family:var(--mono);font-size:0.6rem;
+      color:rgba(255,255,255,0.7);letter-spacing:0.08em;
+      text-transform:uppercase;
+    }
+
+    /* Exp block with list */
+    .block-exp-list{margin-top:0.8rem}
+    .block-exp-item{
+      padding:0.5rem 0;
+      border-top:1px solid var(--line);
+      display:flex;justify-content:space-between;align-items:baseline;
+    }
+    .block-question .block-exp-item{border-top-color:rgba(250,249,246,0.1)}
+    .block-exp-role{font-size:0.8rem;font-weight:500;color:inherit}
+    .block-exp-place{font-size:0.7rem;color:var(--soft);font-family:var(--mono)}
+    .block-question .block-exp-place{color:rgba(250,249,246,0.4)}
+
+    /* Course item in block */
+    .block-course{
+      display:flex;align-items:baseline;gap:0.6rem;
+      padding:0.45rem 0;border-top:1px solid var(--line);
+    }
+    .block-course-code{font-family:var(--mono);font-size:0.62rem;color:var(--soft);white-space:nowrap;min-width:64px}
+    .block-course-name{font-size:0.82rem;color:var(--fg)}
+    .block-course-arrow{margin-left:auto;font-size:0.75rem;color:var(--line);transition:all 0.2s}
+    .block:hover .block-course-arrow{color:var(--fg)}
+
+    /* Degree mini */
+    .deg-mini{margin-top:0.6rem}
+    .deg-mini-item{padding:0.5rem 0;border-top:1px solid var(--line)}
+    .deg-mini-badge{font-family:var(--mono);font-size:0.58rem;color:var(--soft);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.15rem}
+    .deg-mini-title{font-size:0.88rem;font-weight:500}
+    .deg-mini-school{font-size:0.75rem;color:var(--mid)}
+
+    /* ─── MODAL (for info/contact) ─── */
+    .mo-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(17,17,17,0.5);backdrop-filter:blur(10px);z-index:2000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s}
+    .mo-bg.on{opacity:1;pointer-events:auto}
+    .mo-card{background:var(--bg);width:400px;max-width:92%;padding:2.5rem;position:relative;transform:translateY(10px);transition:transform 0.3s}
+    .mo-bg.on .mo-card{transform:translateY(0)}
+    .mo-card h3{font-family:var(--serif);font-size:1.6rem;margin-bottom:0.6rem}
+    .mo-card>p{font-size:0.88rem;color:var(--mid);line-height:1.7;margin-bottom:1.8rem}
+    .mo-email{display:flex;align-items:center;justify-content:space-between;padding:0.85rem 1rem;border:1px solid var(--line);cursor:pointer;transition:border-color 0.3s;margin-bottom:0.4rem}
+    .mo-email:hover{border-color:var(--fg)}
+    .mo-email span{font-size:0.9rem}
+    .mo-email .cp{font-family:var(--mono);font-size:0.62rem;color:var(--soft);text-transform:uppercase;letter-spacing:0.08em}
+    .mo-hint{font-size:0.7rem;color:var(--soft);margin-bottom:1.5rem;font-family:var(--mono)}
+    .mo-foot{display:flex;gap:1.2rem;padding-top:1rem;border-top:1px solid var(--line)}
+    .mo-foot a{font-size:0.78rem;color:var(--soft);text-decoration:none;transition:color 0.2s}
+    .mo-foot a:hover{color:var(--fg)}
+    .mo-x{position:absolute;top:0.8rem;right:1rem;background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--soft);transition:color 0.2s}
+    .mo-x:hover{color:var(--fg)}
+
+    /* ─── INFO PANEL ─── */
+    .info-panel{display:none;height:calc(100vh - 5rem);overflow-y:auto}
+    .info-panel.on{display:block}
+    .home-grid.off{display:none}
+    .info-back{
+      font-size:0.78rem;color:var(--soft);cursor:pointer;
+      display:inline-flex;align-items:center;gap:0.4rem;
+      margin-bottom:2rem;transition:color 0.2s;
+      font-family:var(--mono);background:none;border:none;
+    }
+    .info-back:hover{color:var(--fg)}
+    .info-title{font-family:var(--serif);font-size:2.5rem;font-weight:400;margin-bottom:1rem}
+    .info-text{font-size:0.92rem;color:var(--mid);line-height:1.85;max-width:600px;margin-bottom:2rem}
+    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;margin-top:2rem}
+    .info-col h4{font-family:var(--mono);font-size:0.65rem;text-transform:uppercase;letter-spacing:0.15em;color:var(--soft);margin-bottom:1rem}
+    .info-item{padding:0.7rem 0;border-top:1px solid var(--line)}
+    .info-item-title{font-size:0.9rem;font-weight:500;margin-bottom:0.1rem}
+    .info-item-sub{font-size:0.78rem;color:var(--mid)}
+    .info-item-date{font-family:var(--mono);font-size:0.7rem;color:var(--soft)}
+
+    /* ─── RESPONSIVE ─── */
+    @media(max-width:900px){
+      body{overflow:auto}
+      .layout{grid-template-columns:1fr;height:auto}
+      .side{
+        border-right:none;border-bottom:1px solid var(--line);
+        padding:1.5rem;flex-direction:row;align-items:center;
+        justify-content:flex-start;gap:1.5rem;
+        position:sticky;top:0;z-index:50;background:var(--bg);
+      }
+      .side-photo{width:40px;height:40px;margin-bottom:0}
+      .side-role,.side-rule,.side-bottom{display:none}
+      .side-nav{flex-direction:row;gap:0.8rem}
+      .side-nav a{padding:0.3rem 0;font-size:0.78rem}
+      .main{padding:1.5rem;overflow:visible}
+      .home-grid{
+        grid-template-columns:1fr;
+        height:auto;
+      }
+      .block-wide{grid-column:auto}
+      .block{min-height:160px}
+    }
+    @media(max-width:600px){
+      .side-name{font-size:1.1rem}
+      .side-nav{gap:0.5rem;flex-wrap:wrap}
+    }
+  </style>
+</head>
+<body>
+
+  <div class="layout">
+    <!-- ═══ SIDEBAR ═══ -->
+    <aside class="side">
+      <div class="side-top">
+        <img src="/images/profile.jpg" alt="BK" class="side-photo">
+        <div class="side-name">Bella<br>Kang</div>
+        <div class="side-role">MA Advertising<br>Thesis Track<br>UT Austin</div>
+
+        <ul class="side-nav">
+          <a href="#" class="active" onclick="showHome(event)">Work</a>
+          <a href="#" onclick="showInfo(event)">Info</a>
+        </ul>
+
+        <div class="side-rule"></div>
+
+        <div class="side-role" style="margin-bottom:0">
+          Health Communication<br>
+          Behavior Change<br>
+          Mixed Methods
+        </div>
+      </div>
+
+      <div class="side-bottom">
+        <div class="side-links">
+          <a href="https://www.linkedin.com/in/bellakang017" target="_blank">LinkedIn ↗</a>
+          <a href="#" id="ctaBtn">Email ↗</a>
+          <a href="/bk17/" target="_blank">Blog ↗</a>
+        </div>
+        <div class="side-copy">© 2026</div>
+      </div>
+    </aside>
+
+    <!-- ═══ MAIN ═══ -->
+    <div class="main">
+
+      <!-- HOME: clickable grid -->
+      <div class="home-grid" id="homeGrid">
+
+        <!-- 01: Education — wide -->
+        <div class="block block-wide" onclick="showInfo(event)">
+          <div class="block-num">01 · Education</div>
+          <span class="block-arrow">↗</span>
+          <div class="block-content">
+            <h3>Where I've studied</h3>
+            <div class="deg-mini">
+              <div class="deg-mini-item">
+                <div class="deg-mini-badge">MA · In Progress</div>
+                <div class="deg-mini-title">Advertising (Thesis Track)</div>
+                <div class="deg-mini-school">Moody College · UT Austin · 2025–27</div>
+              </div>
+              <div class="deg-mini-item">
+                <div class="deg-mini-badge">BS · Completed</div>
+                <div class="deg-mini-title">Advertising · GPA 3.88</div>
+                <div class="deg-mini-school">UT Austin · Dean's List</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Photo block -->
+        <div class="block block-photo">
+          <img src="/images/pilates.jpg" alt="Pilates">
+          <div class="block-photo-label">Pilates Instructor</div>
+        </div>
+
+        <!-- 02: Coursework -->
+        <a class="block" href="/adv382j-guide/">
+          <div class="block-num">02 · Coursework</div>
+          <span class="block-arrow">↗</span>
+          <div class="block-content">
+            <h3>Courses</h3>
+            <div class="block-exp-list">
+              <div class="block-course"><span class="block-course-code">ADV 382J</span><span class="block-course-name">Persuasion Theory</span><span class="block-course-arrow">→</span></div>
+              <div class="block-course"><span class="block-course-code">HDF 342</span><span class="block-course-name">Developmental Psychopathology</span><span class="block-course-arrow">→</span></div>
+              <div class="block-course"><span class="block-course-code">MKT 397</span><span class="block-course-name">PhD Quantitative Marketing</span><span class="block-course-arrow">→</span></div>
+            </div>
+          </div>
+        </a>
+
+        <!-- 03: Research question — dark -->
+        <div class="block block-question">
+          <div class="block-num">03 · Research</div>
+          <div class="block-content">
+            <h3>How do we design messages that work with — not against — the cognitive and cultural contexts people actually inhabit?</h3>
+            <div class="block-sub" style="margin-top:0.8rem">Korean American women · Self-silencing · Help-seeking · Culturally embedded communication</div>
+          </div>
+        </div>
+
+        <!-- 04: Experience -->
+        <div class="block" onclick="showInfo(event)">
+          <div class="block-num">04 · Experience</div>
+          <span class="block-arrow">↗</span>
+          <div class="block-content">
+            <h3>Where I've worked</h3>
+            <div class="block-exp-list">
+              <div class="block-exp-item"><span class="block-exp-role">Global Impact Graduate Consultant</span><span class="block-exp-place">UT Austin</span></div>
+              <div class="block-exp-item"><span class="block-exp-role">Global Marketing Intern</span><span class="block-exp-place">Dasique</span></div>
+              <div class="block-exp-item"><span class="block-exp-role">Research Assistant</span><span class="block-exp-place">UT Nursing</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 05: Academic Logs -->
+        <a class="block" href="/mkt397/">
+          <div class="block-num">05 · Academic Log</div>
+          <span class="block-arrow">↗</span>
+          <div class="block-content">
+            <h3>MKT 397<br>Lab Notebook</h3>
+            <div class="block-sub">PhD Quantitative Marketing<br>Prof. Rex Du · 6 weeks logged</div>
+          </div>
+        </a>
+
+        <!-- 06: Beyond -->
+        <div class="block">
+          <div class="block-num">06 · Beyond Research</div>
+          <div class="block-content">
+            <h3>Saturday Reading Group</h3>
+            <div class="block-sub">Weekly reading on mind–body connection. Currently: Core Awareness by Liz Koch.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- INFO PANEL -->
+      <div class="info-panel" id="infoPanel">
+        <button class="info-back" onclick="showHome(event)">← Back</button>
+        <h2 class="info-title">About</h2>
+        <p class="info-text">I study why health communication fails across cultural boundaries, and how to redesign it. Focusing on Korean American midlife women, self-silencing, and the gap between knowing and seeking help.</p>
+        <p class="info-text">Mixed methods to bridge lived experience and measurable outcomes. Small shifts in interpretation can redirect self-defeating patterns into self-enhancing ones. Targeting PhD programs (Fall 2027) in health communication, developmental science, or educational psychology.</p>
+
+        <div class="info-grid">
+          <div class="info-col">
+            <h4>Education</h4>
+            <div class="info-item">
+              <div class="info-item-title">MA Advertising (Thesis Track)</div>
+              <div class="info-item-sub">Moody College · UT Austin</div>
+              <div class="info-item-date">2025–2027 · In Progress</div>
+            </div>
+            <div class="info-item">
+              <div class="info-item-title">BS Advertising</div>
+              <div class="info-item-sub">UT Austin · GPA 3.88 / 4.0</div>
+              <div class="info-item-date">Graduated · Dean's List</div>
+            </div>
+          </div>
+          <div class="info-col">
+            <h4>Experience</h4>
+            <div class="info-item">
+              <div class="info-item-title">Global Impact Graduate Consultant</div>
+              <div class="info-item-sub">UT Austin · Office of Career & Life Design</div>
+              <div class="info-item-date">Dec 2025 — Present</div>
+            </div>
+            <div class="info-item">
+              <div class="info-item-title">Global Marketing Intern</div>
+              <div class="info-item-sub">Dasique · Seoul</div>
+              <div class="info-item-date">May — Aug 2025</div>
+            </div>
+            <div class="info-item">
+              <div class="info-item-title">Research Assistant</div>
+              <div class="info-item-sub">UT Austin School of Nursing</div>
+              <div class="info-item-date">Dec 2023 — May 2025</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-grid" style="margin-top:2.5rem">
+          <div class="info-col">
+            <h4>Interests</h4>
+            <div class="info-item">
+              <div class="info-item-title">Certified Pilates Instructor</div>
+              <div class="info-item-sub">Embodied practice shapes cognition, stress, and well-being</div>
+            </div>
+            <div class="info-item">
+              <div class="info-item-title">Saturday Reading Group</div>
+              <div class="info-item-sub">Weekly mind–body connection reading</div>
+            </div>
+          </div>
+          <div class="info-col">
+            <h4>Methods & Focus</h4>
+            <div class="info-item">
+              <div class="info-item-sub">Health Communication · Behavior Change · Mixed Methods · Intervention Design · Cross-Cultural Research</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══ MODAL ═══ -->
+  <div class="mo-bg" id="mo">
+    <div class="mo-card">
+      <button class="mo-x" onclick="closeM()">✕</button>
+      <h3>Let's connect</h3>
+      <p>Always open to discussing health communication, research collaborations, or a good cup of coffee.</p>
+      <div class="mo-email" onclick="copyE()">
+        <span id="eT">bellakang@utexas.edu</span>
+        <span class="cp" id="cB">Copy</span>
+      </div>
+      <div class="mo-hint" id="cH">Click to copy</div>
+      <div class="mo-foot">
+        <a href="https://www.linkedin.com/in/bellakang017" target="_blank">LinkedIn →</a>
+        <a href="mailto:bellakang@utexas.edu">Mail →</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // View switching
+    function showHome(e){
+      e&&e.preventDefault();
+      document.getElementById('homeGrid').classList.remove('off');
+      document.getElementById('infoPanel').classList.remove('on');
+      document.querySelectorAll('.side-nav a').forEach(a=>a.classList.remove('active'));
+      document.querySelector('.side-nav a:first-child').classList.add('active');
+    }
+    function showInfo(e){
+      e&&e.preventDefault();
+      document.getElementById('homeGrid').classList.add('off');
+      document.getElementById('infoPanel').classList.add('on');
+      document.querySelectorAll('.side-nav a').forEach(a=>a.classList.remove('active'));
+      document.querySelector('.side-nav a:nth-child(2)').classList.add('active');
+    }
+
+    // Modal
+    const mo=document.getElementById('mo');
+    document.getElementById('ctaBtn').onclick=e=>{e.preventDefault();mo.classList.add('on')};
+    function closeM(){mo.classList.remove('on');setTimeout(()=>{document.getElementById('cH').textContent='Click to copy';document.getElementById('cB').textContent='Copy'},300)}
+    function copyE(){navigator.clipboard.writeText(document.getElementById('eT').innerText.trim()).then(()=>{document.getElementById('cB').textContent='Copied';document.getElementById('cH').textContent='Email copied ✓';document.getElementById('cH').style.color='var(--warm)';setTimeout(()=>document.getElementById('cH').style.color='',2000)})}
+    mo.onclick=e=>{if(e.target===mo)closeM()};
+    document.onkeydown=e=>{if(e.key==='Escape'&&mo.classList.contains('on'))closeM()};
+  </script>
+</body>
+</html>
